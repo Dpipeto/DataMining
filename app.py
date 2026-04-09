@@ -7,3 +7,7 @@ def index():
 @app.route('/Generos/')
 def generos():
     return render_template('generos.html')
+
+@app.route('/Generos/Criticos/')
+def criticos():
+    return render_template('criticos.html')
