@@ -3,10 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criticos</title>
+    <title>Críticos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Newsreader:ital,wght@0,400;1,300;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  :root {
+    --bg:      #0a0a0b;
+    --surface: #111114;
+    --border:  #1e1e24;
+    --border2: #2a2a34;
+    --text:    #e8e6df;
+    --muted:   #6b6975;
+    --accent:  #c8f03c;
+    --accent2: #7b5ea7;
+    --warm:    #f0a04b;
+    --danger:  #e8523a;
+    --sans:    'Syne', sans-serif;
+    --mono:    'DM Mono', monospace;
+    --serif:   'Newsreader', serif;
+  }
+ 
+  html { scroll-behavior: smooth; }
+ 
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+ 
+  ::selection { background: var(--accent); color: #0a0a0b; }
+ 
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 56px;
+    border-bottom: 0.5px solid var(--border);
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+ 
+  .nav-links {
+    display: flex; gap: 2rem; list-style: none;
+  }
+ 
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+ 
+  .nav-links a:hover { color: var(--text); }
+
+  .content {
+    padding: 5rem 2.5rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section {
+    margin-bottom: 4rem;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--accent);
+  }
+
+  .section-text {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+
+  .plot-container {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+  }
+    </style>
 </head>
 <body>
-    <p>En este apartado se analiza la realación entre las calificaciones de los criticos y las ventas de los videojuegos, se realizara un grafico de dispersión para analizar la relación entre las calificaciones de los críticos y las ventas globales, se analizaran las calificaciones de los críticos por región (NA, EU, JP) para ver si hay diferencias significativas en las calificaciones según la región, se compararan las calificaciones de los críticos entre diferentes tipos de videojuegos (AAA, Indie, etc.) para ver si hay diferencias en las calificaciones según el tipo del videojuego.
-    </p>
+    <nav>
+        <div class="nav-logo">GAMEDATA_RESOURCES</div>
+        <ul class="nav-links">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/Generos/">Géneros</a></li>
+            <li><a href="/criticos">Críticos</a></li>
+            <li><a href="/predictor">Predictor</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <section class="section">
+            <h1 class="section-title">Análisis de Críticos y Ventas</h1>
+            <p class="section-text">
+                En este apartado se analiza la relación entre las calificaciones de los críticos (Metacritic) y las de los usuarios, y cómo ambas se relacionan con las ventas globales. Se realizarán gráficos de dispersión para comparar las correlaciones.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Scatter Plot: Puntuación Críticos vs Ventas Globales</h2>
+            <div class="plot-container">
+                <div id="critics-plot" style="width:100%;height:400px;"></div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Scatter Plot: Puntuación Usuarios vs Ventas Globales</h2>
+            <div class="plot-container">
+                <div id="users-plot" style="width:100%;height:400px;"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Data from backend
+        const criticsData = {{ critics_data|safe }};
+        const usersData = {{ users_data|safe }};
+
+        const criticsPlotData = {
+            x: criticsData.x,
+            y: criticsData.y,
+            text: criticsData.text,
+            mode: 'markers',
+            type: 'scatter',
+            name: 'Críticos vs Ventas',
+            marker: { color: '#c8f03c' }
+        };
+
+        const usersPlotData = {
+            x: usersData.x,
+            y: usersData.y,
+            text: usersData.text,
+            mode: 'markers',
+            type: 'scatter',
+            name: 'Usuarios vs Ventas',
+            marker: { color: '#7b5ea7' }
+        };
+
+        const layoutCritics = {
+            title: 'Puntuación Críticos vs Ventas Globales',
+            xaxis: { title: 'Puntuación Críticos' },
+            yaxis: { title: 'Ventas Globales (millones)' },
+            paper_bgcolor: '#111114',
+            plot_bgcolor: '#111114',
+            font: { color: '#e8e6df' }
+        };
+
+        const layoutUsers = {
+            title: 'Puntuación Usuarios vs Ventas Globales',
+            xaxis: { title: 'Puntuación Usuarios' },
+            yaxis: { title: 'Ventas Globales (millones)' },
+            paper_bgcolor: '#111114',
+            plot_bgcolor: '#111114',
+            font: { color: '#e8e6df' }
+        };
+
+        Plotly.newPlot('critics-plot', [criticsPlotData], layoutCritics);
+        Plotly.newPlot('users-plot', [usersPlotData], layoutUsers);
+    </script>
 </body>
 </html>
