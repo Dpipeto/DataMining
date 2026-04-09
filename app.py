@@ -8,3 +8,6 @@ def home():
 @app.route('/inicio/')
 def index():
     return render_template('index.html')
+@app.route('/Generos/')
+def generos():
+    return render_template('generos.html')
