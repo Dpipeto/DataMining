@@ -142,8 +142,8 @@
 
     <script>
         // Data from backend
-        const criticsData = {{ critics_data|safe }};
-        const usersData = {{ users_data|safe }};
+        const criticsData = {{ critics_data | tojson | safe }};
+        const usersData = {{ users_data | tojson | safe }};
 
         const criticsPlotData = {
             x: criticsData.x,
