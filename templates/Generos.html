@@ -4,14 +4,277 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Géneros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Newsreader:ital,wght@0,400;1,300;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  :root {
+    --bg:      #0a0a0b;
+    --surface: #111114;
+    --border:  #1e1e24;
+    --border2: #2a2a34;
+    --text:    #e8e6df;
+    --muted:   #6b6975;
+    --accent:  #c8f03c;
+    --accent2: #7b5ea7;
+    --warm:    #f0a04b;
+    --danger:  #e8523a;
+    --sans:    'Syne', sans-serif;
+    --mono:    'DM Mono', monospace;
+    --serif:   'Newsreader', serif;
+  }
+ 
+  html { scroll-behavior: smooth; }
+ 
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+ 
+  ::selection { background: var(--accent); color: #0a0a0b; }
+ 
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 56px;
+    border-bottom: 0.5px solid var(--border);
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+ 
+  .nav-links {
+    display: flex; gap: 2rem; list-style: none;
+  }
+ 
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+ 
+  .nav-links a:hover { color: var(--text); }
+
+  .content {
+    padding: 5rem 2.5rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section {
+    margin-bottom: 4rem;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--accent);
+  }
+
+  .section-text {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+
+  .plot-container {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .tabs {
+    display: flex;
+    margin-bottom: 2rem;
+  }
+
+  .tab-button {
+    background: var(--surface);
+    border: 0.5px solid var(--border2);
+    color: var(--muted);
+    padding: 10px 20px;
+    cursor: crosshair;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .tab-button.active {
+    background: var(--accent);
+    color: #0a0a0b;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .top-list {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+  }
+
+  .top-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 0.5px solid var(--border2);
+  }
+
+  .top-item:last-child {
+    border-bottom: none;
+  }
+    </style>
 </head>
 <body>
-    <h1>Comparación según géneros</h1>
-    <p>
-        En esta pagina se explorara si los generos de los videojuegos tienen rendimientos distintos segun la region geográfica y el tipo del videojuego
-        <h2>¿Como se realizara?</h2>
-        Se realizaran graficos de barras comparando las regiones de ventas por los generos en NA / EU / JP, comparando las ventas por genero segun el tipo del videojuego (AAA, Indie, etc)
-        <h2>Perfil de preferencia por region</h2>
-        <h2>top 10 juegos vendidos por region</h2>
+    <nav>
+        <div class="nav-logo">GAMEDATA_RESOURCES</div>
+        <ul class="nav-links">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/Generos/">Géneros</a></li>
+            <li><a href="/criticos">Críticos</a></li>
+            <li><a href="/predictor">Predictor</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <section class="section">
+            <h1 class="section-title">Análisis por Géneros</h1>
+            <p class="section-text">
+                Explora cómo los géneros de videojuegos afectan las ventas en diferentes regiones geográficas.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Ventas por Género en Regiones</h2>
+            <div class="plot-container">
+                <div id="genre-plot" style="width:100%;height:500px;"></div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Top 10 Juegos por Región</h2>
+            <div class="tabs">
+                <button class="tab-button active" onclick="showTab('na')">NA</button>
+                <button class="tab-button" onclick="showTab('eu')">EU</button>
+                <button class="tab-button" onclick="showTab('jp')">JP</button>
+            </div>
+            <div id="na" class="tab-content active">
+                <div class="top-list">
+                    {% for item in top_na %}
+                    <div class="top-item">
+                        <span>{{ item.Name }}</span>
+                        <span>{{ item.NA_Sales }}M</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="eu" class="tab-content">
+                <div class="top-list">
+                    {% for item in top_eu %}
+                    <div class="top-item">
+                        <span>{{ item.Name }}</span>
+                        <span>{{ item.EU_Sales }}M</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="jp" class="tab-content">
+                <div class="top-list">
+                    {% for item in top_jp %}
+                    <div class="top-item">
+                        <span>{{ item.Name }}</span>
+                        <span>{{ item.JP_Sales }}M</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Data from backend
+        const genres = {{ genres|safe }};
+        const naSales = {{ na_sales|safe }};
+        const euSales = {{ eu_sales|safe }};
+        const jpSales = {{ jp_sales|safe }};
+
+        const traceNA = {
+            x: genres,
+            y: naSales,
+            name: 'NA Sales',
+            type: 'bar',
+            marker: { color: '#c8f03c' }
+        };
+
+        const traceEU = {
+            x: genres,
+            y: euSales,
+            name: 'EU Sales',
+            type: 'bar',
+            marker: { color: '#7b5ea7' }
+        };
+
+        const traceJP = {
+            x: genres,
+            y: jpSales,
+            name: 'JP Sales',
+            type: 'bar',
+            marker: { color: '#f0a04b' }
+        };
+
+        const layout = {
+            barmode: 'group',
+            paper_bgcolor: '#111114',
+            plot_bgcolor: '#111114',
+            font: { color: '#e8e6df' },
+            xaxis: { title: 'Género' },
+            yaxis: { title: 'Ventas (millones)' }
+        };
+
+        Plotly.newPlot('genre-plot', [traceNA, traceEU, traceJP], layout);
+
+        function showTab(region) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active from buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(region).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
 </body>
 </html>

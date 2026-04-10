@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Newsreader:ital,wght@0,400;1,300;1,400&display=swap" rel="stylesheet">
+    <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  :root {
+    --bg:      #0a0a0b;
+    --surface: #111114;
+    --border:  #1e1e24;
+    --border2: #2a2a34;
+    --text:    #e8e6df;
+    --muted:   #6b6975;
+    --accent:  #c8f03c;
+    --accent2: #7b5ea7;
+    --warm:    #f0a04b;
+    --danger:  #e8523a;
+    --sans:    'Syne', sans-serif;
+    --mono:    'DM Mono', monospace;
+    --serif:   'Newsreader', serif;
+  }
+ 
+  html { scroll-behavior: smooth; }
+ 
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+ 
+  ::selection { background: var(--accent); color: #0a0a0b; }
+ 
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 56px;
+    border-bottom: 0.5px solid var(--border);
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+ 
+  .nav-links {
+    display: flex; gap: 2rem; list-style: none;
+  }
+ 
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+ 
+  .nav-links a:hover { color: var(--text); }
+
+  .content {
+    padding: 5rem 2.5rem 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .section {
+    margin-bottom: 4rem;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--accent);
+  }
+
+  .section-text {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+
+  .form-container {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .form-input, .form-select {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg);
+    border: 0.5px solid var(--border2);
+    border-radius: 2px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+  }
+
+  .form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent);
+    color: #0a0a0b;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 2px;
+    cursor: crosshair;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: #d9ff50;
+    transform: translateY(-1px);
+  }
+
+  .prediction-result {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem;
+    margin-top: 2rem;
+  }
+
+  .prediction-text {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    color: var(--accent);
+  }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-logo">GAMEDATA_RESOURCES</div>
+        <ul class="nav-links">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/Generos/">Géneros</a></li>
+            <li><a href="/criticos">Críticos</a></li>
+            <li><a href="/predictor">Predictor</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <section class="section">
+            <h1 class="section-title">Predictor de Éxito</h1>
+            <p class="section-text">
+                Ingresa las características de un juego hipotético y obtén una predicción de su éxito basada en nuestro modelo de machine learning.
+            </p>
+        </section>
+
+        <section class="section">
+            <div class="form-container">
+                <form id="prediction-form">
+                    <div class="form-group">
+                        <label for="genre" class="form-label">Género</label>
+                        <select id="genre" name="genre" class="form-select" required>
+                            <option value="">Selecciona un género</option>
+                            <option value="Sports">Deportes</option>
+                            <option value="Platform">Plataforma</option>
+                            <option value="Racing">Carreras</option>
+                            <option value="Role-Playing">RPG</option>
+                            <option value="Puzzle">Puzzle</option>
+                            <option value="Misc">Misc</option>
+                            <option value="Shooter">Shooter</option>
+                            <option value="Action">Acción</option>
+                            <option value="Adventure">Aventura</option>
+                            <option value="Simulation">Simulación</option>
+                            <option value="Fighting">Lucha</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="platform" class="form-label">Plataforma</label>
+                        <select id="platform" name="platform" class="form-select" required>
+                            <option value="">Selecciona una plataforma</option>
+                            <option value="Wii">Wii</option>
+                            <option value="NES">NES</option>
+                            <option value="DS">DS</option>
+                            <option value="GB">Game Boy</option>
+                            <option value="SNES">SNES</option>
+                            <option value="N64">Nintendo 64</option>
+                            <option value="GBA">Game Boy Advance</option>
+                            <option value="PS3">PlayStation 3</option>
+                            <option value="PS2">PlayStation 2</option>
+                            <option value="PS">PlayStation</option>
+                            <option value="X360">Xbox 360</option>
+                            <option value="Xbox">Xbox</option>
+                            <option value="PC">PC</option>
+                            <option value="Genesis">Genesis</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rating" class="form-label">Calificación Estimada (0-100)</label>
+                        <input type="number" id="rating" name="rating" class="form-input" min="0" max="100" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Predecir Éxito</button>
+                </form>
+            </div>
+        </section>
+
+        <div id="result-container"></div>
+    </div>
+
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const genre = document.getElementById('genre').value;
+            const platform = document.getElementById('platform').value;
+            const rating = document.getElementById('rating').value;
+            const resultContainer = document.getElementById('result-container');
+            
+            console.log('[DEBUG] Form submitted:', { genre, platform, rating });
+            
+            // Validación
+            if (!genre || !platform || !rating) {
+                resultContainer.innerHTML = '<section class="section"><div class="prediction-result"><p class="prediction-text" style="color: #e8523a;">⚠ Por favor completa todos los campos.</p></div></section>';
+                return;
+            }
+            
+            // Mostrar loading
+            resultContainer.innerHTML = '<section class="section"><div class="prediction-result"><p class="prediction-text">⏳ Procesando predicción...</p></div></section>';
+            
+            try {
+                const formData = new FormData();
+                formData.append('genre', genre);
+                formData.append('platform', platform);
+                formData.append('rating', rating);
+                
+                console.log('[DEBUG] Sending request to /api/predict');
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('[DEBUG] Response status:', response.status);
+                console.log('[DEBUG] Response headers:', response.headers.get('content-type'));
+                
+                // Verificar si la respuesta es JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('[ERROR] Response is not JSON:', text);
+                    resultContainer.innerHTML = `<section class="section"><div class="prediction-result"><p class="prediction-text" style="color: #e8523a;">❌ Error: El servidor no respondió con JSON válido. Respuesta: ${text}</p></div></section>`;
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log('[DEBUG] Response data:', data);
+                
+                if (data.success) {
+                    resultContainer.innerHTML = `<section class="section"><div class="prediction-result"><h2 class="section-title">✓ Resultado de la Predicción</h2><p class="prediction-text">Predicción de ventas globales: <strong>${data.sales} millones</strong><br>Nivel de éxito: <strong>${data.level}</strong></p></div></section>`;
+                } else {
+                    resultContainer.innerHTML = `<section class="section"><div class="prediction-result"><p class="prediction-text" style="color: #e8523a;">❌ Error: ${data.error}</p></div></section>`;
+                }
+            } catch (error) {
+                console.error('[ERROR] Exception:', error);
+                resultContainer.innerHTML = `<section class="section"><div class="prediction-result"><p class="prediction-text" style="color: #e8523a;">❌ Error de conexión: ${error.message}</p></div></section>`;
+            }
+        });
+    </script>
+</body>
+</html>
