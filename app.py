@@ -64,14 +64,14 @@ def generos():
     top_eu = df.nlargest(10, 'EU_Sales')[['Name', 'EU_Sales']].to_dict('records')
     top_jp = df.nlargest(10, 'JP_Sales')[['Name', 'JP_Sales']].to_dict('records')
     
-    return render_template('Generos.html', 
-                           genres=json.dumps(genres), 
-                           na_sales=json.dumps(na_sales), 
-                           eu_sales=json.dumps(eu_sales), 
+    return render_template('Generos.html',
+                           genres=json.dumps(genres),
+                           na_sales=json.dumps(na_sales),
+                           eu_sales=json.dumps(eu_sales),
                            jp_sales=json.dumps(jp_sales),
-                           top_na=json.dumps(top_na),
-                           top_eu=json.dumps(top_eu),
-                           top_jp=json.dumps(top_jp))
+                           top_na=top_na,
+                           top_eu=top_eu,
+                           top_jp=top_jp)
 
 @app.route('/criticos')
 def criticos():
