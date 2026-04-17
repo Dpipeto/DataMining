@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<title>Análisis precio – Steam (2024 vs 2025)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{font-family:Arial,Helvetica,sans-serif;background:#fafafa;margin:0;padding:0;}
+header{background:#34495e;color:#fff;text-align:center;padding:1.5rem;}
+main{max-width:1200px;margin:auto;padding:2rem;}
+h2{margin-top:1.5rem;}
+.chart{margin:2rem 0;background:#fff;padding:1rem;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.12);}
+table, th, td {border:1px solid #ccc;}
+th, td {padding:8px;text-align:center;}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+
+<body>
+
+<header>
+  <h1>Precio vs Reseña Positiva – Steam (Comparativa 2024 vs 2025)</h1>
+</header>
+
+<main>
+
+<p>
+Comparación del impacto del precio en reseñas positivas entre datasets de Steam 2024 y 2025.
+</p>
+
+<h2>Resumen por rango de precio</h2>
+<table id="stats-table" style="width:100%;border-collapse:collapse;margin:1rem 0;">
+<tr>
+  <th>Intervalo de precio</th>
+  <th>% Reseñas positivas</th>
+</tr>
+</table>
+
+<div class="chart">
+  <h3>Precio (USD) vs. % Reseñas positivas</h3>
+  <canvas id="scatter" width="1000" height="600"></canvas>
+</div>
+
+</main>
+
+<script>
+
+function loadData(file) {
+  return new Promise((resolve) => {
+    Papa.parse(file, {
+      download: true,
+      header: true,
+      complete: function(results) {
+
+        const prices = [];
+        const pos = [];
+
+        results.data.forEach(d => {
+          const price = parseFloat(d.price);
+          const pct = parseFloat(d.pct_pos_total);
+
+          if (!isNaN(price) && !isNaN(pct)) {
+            prices.push(price);
+            pos.push(pct / 100);
+          }
+        });
+
+        resolve({ prices, pos });
+      }
+    });
+  });
+}
+
+Promise.all([
+  loadData("games_march2025_cleaned.csv"),
+  loadData("games_may2024_cleaned.csv")
+]).then(([data2025, data2024]) => {
+
+  generarTabla(data2025, "2025");
+  generarTabla(data2024, "2024");
+  generarGrafica(data2025, data2024);
+
+});
+
+function generarTabla(data, year) {
+
+  const bins = [0,10,20,30,40,100];
+  const labels = ['<10$','10-20$','20-30$','30-40$','>40$'];
+
+  const binCount = Array(labels.length).fill(0);
+  const binPositive = Array(labels.length).fill(0);
+
+  data.prices.forEach((p,i)=>{
+    let idx = labels.length - 1;
+
+    for (let j=0;j<bins.length-1;j++){
+      if(p >= bins[j] && p < bins[j+1]){
+        idx = j;
+        break;
+      }
+    }
+
+    binCount[idx]++;
+    binPositive[idx] += data.pos[i];
+  });
+
+  const table = document.getElementById('stats-table');
+
+  const headerRow = table.insertRow();
+  const cell = headerRow.insertCell(0);
+  cell.colSpan = 2;
+  cell.style.fontWeight = "bold";
+  cell.style.background = "#eee";
+  cell.textContent = "Dataset " + year;
+
+  binCount.forEach((cnt,i)=>{
+    if(cnt === 0) return;
+
+    const row = table.insertRow();
+    row.insertCell(0).textContent = labels[i];
+
+    const perc = (binPositive[i]/cnt*100).toFixed(1);
+    row.insertCell(1).textContent = perc + "%";
+  });
+}
+
+function generarGrafica(d2025, d2024){
+
+  const ctx = document.getElementById('scatter').getContext('2d');
+
+  new Chart(ctx, {
+    type:'scatter',
+    data:{
+      datasets:[
+        {
+          label:'2025',
+          data:d2025.prices.map((p,i)=>({x:p,y:d2025.pos[i]})),
+          backgroundColor:'rgba(46,139,87,0.7)'
+        },
+        {
+          label:'2024',
+          data:d2024.prices.map((p,i)=>({x:p,y:d2024.pos[i]})),
+          backgroundColor:'rgba(255,99,132,0.7)'
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      scales:{
+        x:{title:{display:true, text:'Precio (USD)'}},
+        y:{title:{display:true, text:'% Positivas'}, min:0, max:1}
+      }
+    }
+  });
+}
+
+</script>
+
+</body>
+</html>
